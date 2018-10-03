@@ -1,6 +1,8 @@
 
 import { Vector3vl } from '3vl';
 
+export { Vector3vl };
+
 export class Waveform {
     constructor(private readonly _bits : number, private readonly _data : [number, Vector3vl][]) {
     }
@@ -48,7 +50,7 @@ export interface WaveCanvasSettings {
 export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings) {
     const data = w.getRange(s.start, s.span);
     const zdata = data.map((e, i) => [e, data[i+1]]);
-    zdata.pop();
+    zdata[zdata.length-1][1] = zdata[zdata.length-1][0];
     c.clearRect(0, 0, c.canvas.width, c.canvas.height);
     const t2x = (t) => (t - s.start) / s.span * c.canvas.width;
     const xy = 0.5 * c.canvas.height;
@@ -61,6 +63,15 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     grad.addColorStop(0, s.bitColors[0]);
     grad.addColorStop(0.5, s.bitColors[1]);
     grad.addColorStop(1, s.bitColors[2]);
+    for (const t of Array(s.span).keys()) {
+        const x = t2x(t + s.start);
+        c.beginPath();
+        c.lineWidth = 0.5;
+        c.strokeStyle = 'gray';
+        c.moveTo(x, 0);
+        c.lineTo(x, c.canvas.height);
+        c.stroke();
+    }
     for (const [[at, av], [bt, bv]] of zdata) {
         const ax = t2x(at), bx = t2x(bt);
         if (w.bits == 1) {
@@ -68,15 +79,16 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
             const ay = b2y(ab), by = b2y(bb);
             const ac = b2c(ab), bc = b2c(bb);
             const gap = Math.min(Math.abs(ay-by) * s.gapScale, c.canvas.width / s.span / 2);
+            c.lineWidth = 2;
             c.beginPath();
             c.strokeStyle = grad;
-            c.moveTo(ax, ay);
-            c.lineTo(ax + gap, by);
+            c.moveTo(bx - gap, ay);
+            c.lineTo(bx, by);
             c.stroke();
             c.beginPath();
-            c.strokeStyle = bc;
-            c.moveTo(ax + gap, by);
-            c.lineTo(bx, by);
+            c.strokeStyle = ac;
+            c.moveTo(ax, ay);
+            c.lineTo(bx - gap, ay);
             c.stroke();
         } else {
             const gap = Math.min(Math.abs(hy-ly) * s.gapScale, c.canvas.width / s.span / 2);
