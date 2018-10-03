@@ -1,0 +1,38 @@
+{
+  "name": "wavecanvas",
+  "version": "0.0.1",
+  "description": "Digital waveform to HTML canvas",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "npm run prod",
+    "dev": "webpack --mode development",
+    "prod": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tilk/wavecanvas.git"
+  },
+  "keywords": [
+    "digital",
+    "logic",
+    "waveform",
+    "canvas"
+  ],
+  "author": "Marek Materzok",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/tilk/wavecanvas/issues"
+  },
+  "homepage": "https://github.com/tilk/wavecanvas#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.19",
+    "ts-loader": "^5.2.1",
+    "typescript": "^3.1.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  },
+  "dependencies": {
+    "3vl": "^0.1.0"
+  }
+}
