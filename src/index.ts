@@ -50,12 +50,17 @@ export class Waveform {
     }
 }
 
+type base = 'hex' | 'oct' | 'bin';
+
 export interface WaveCanvasSettings {
     start : number,
     span : number,
     bitColors : [string, string, string, string],
     heightFill : number,
-    gapScale : number
+    gapScale : number,
+    base : base,
+    gridWidth : number,
+    gridColor : string
 }
 
 export const defaultSettings : WaveCanvasSettings = {
@@ -63,7 +68,10 @@ export const defaultSettings : WaveCanvasSettings = {
     span: 0,
     bitColors: ['#fc7c68', '#999', '#03c03c', '#779ecb'],
     gapScale: 0.2,
-    heightFill: 0.8
+    heightFill: 0.8,
+    base: 'hex',
+    gridWidth: 0.5,
+    gridColor: 'gray'
 };
 
 Object.freeze(defaultSettings);
@@ -78,6 +86,13 @@ export function extendSettings(settings : WaveCanvasSettings, newSettings) : Wav
 }
 
 export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings) {
+    const v2b = (v, b) => {
+        switch(b) {
+            case 'bin': return v.toBin();
+            case 'hex': return v.toHex();
+            case 'oct': return v.toOct();
+        }
+    };
     const data = w.getRange(s.start, s.span);
     const zdata = data.map((e, i) => [e, data[i+1]]);
     zdata.pop();
@@ -93,11 +108,11 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     grad.addColorStop(0, s.bitColors[0]);
     grad.addColorStop(0.5, s.bitColors[1]);
     grad.addColorStop(1, s.bitColors[2]);
-    c.lineWidth = 0.5;
+    c.lineWidth = s.gridWidth;
     for (const t of Array(s.span).keys()) {
         const x = t2x(t + s.start);
         c.beginPath();
-        c.strokeStyle = 'gray';
+        c.strokeStyle = s.gridColor;
         c.moveTo(x, 0);
         c.lineTo(x, c.canvas.height);
         c.stroke();
@@ -124,6 +139,14 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
             const gap = Math.min(Math.abs(hy-ly) * s.gapScale, c.canvas.width / s.span / 2);
             const ac = w2c(av), bc = w2c(bv);
             const ad = av.isDefined, bd = bv.isDefined;
+            if (ad) {
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                const txt = v2b(av, s.base);
+                const meas = c.measureText(txt);
+                if (meas.width < (bx-ax-gap)*2)
+                    c.fillText(v2b(av, s.base), (ax+bx-gap)/2, c.canvas.height/2, bx-ax-gap);
+            }
             if (!ad && !bd) {
                 c.beginPath();
                 c.strokeStyle = ac;
