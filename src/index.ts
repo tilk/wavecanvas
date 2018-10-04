@@ -44,9 +44,6 @@ export class Waveform {
         if (first > 0 && this._data[first][0] > i) first--;
         if (last < this._data.length-1 && this._data[last][0] < i+n) last++;
         const s = this._data.slice(first, last + 1);
-        console.log(s[s.length-1][0]);
-        console.log(i+n);
-        console.log(this._present);
         if (s[s.length-1][0] < i+n && this._present > s[s.length-1][0])
             s.push([this._present, s[s.length-1][1]]);
         return s;
@@ -57,7 +54,27 @@ export interface WaveCanvasSettings {
     start : number,
     span : number,
     bitColors : [string, string, string, string],
+    heightFill : number,
     gapScale : number
+}
+
+export const defaultSettings : WaveCanvasSettings = {
+    start: 0,
+    span: 0,
+    bitColors: ['#fc7c68', '#999', '#03c03c', '#779ecb'],
+    gapScale: 0.2,
+    heightFill: 0.8
+};
+
+Object.freeze(defaultSettings);
+
+export function extendSettings(settings : WaveCanvasSettings, newSettings) : WaveCanvasSettings {
+    var props = {};
+    for (const [k, v] of Object.entries(newSettings)) {
+        props[k] = {value: v};
+    }
+    const ret = Object.create(settings, props);
+    return ret;
 }
 
 export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings) {
@@ -67,8 +84,8 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     c.clearRect(0, 0, c.canvas.width, c.canvas.height);
     const t2x = (t) => (t - s.start) / s.span * c.canvas.width;
     const xy = 0.5 * c.canvas.height;
-    const hy = 0.1 * c.canvas.height;
-    const ly = 0.9 * c.canvas.height;
+    const hy = (0.5 - s.heightFill / 2) * c.canvas.height;
+    const ly = (0.5 + s.heightFill / 2) * c.canvas.height;
     const b2y = (b) => [ly, xy, hy][b+1];
     const b2c = (b) => s.bitColors[b+1];
     const w2c = (w) => s.bitColors[!w.isDefined ? 1 : w.isLow ? 0 : w.isHigh ? 2 : 3];
