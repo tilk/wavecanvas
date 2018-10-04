@@ -6,7 +6,7 @@ export { Vector3vl };
 export class Waveform {
     private _present : number;
 
-    constructor(private readonly _bits : number, private readonly _data : [number, Vector3vl][]) {
+    constructor(private readonly _bits : number, private readonly _data : [number, Vector3vl][] = []) {
         if (_data.length == 0) this._present = -1;
         else this._present = this._data[this._data.length-1][0];
     }
