@@ -15,18 +15,26 @@ export class Waveform {
         return this._bits;
     }
 
+    updatePresent(t : number) {
+        this._present = Math.max(this._present, t);
+    }
+
     push(t : number, v : Vector3vl) {
-        console.assert(v.bits == this._bits && t > this._present);
+        console.assert(v.bits == this._bits && t >= this._present);
         this._present = t;
         if (this._data.length > 0) {
             const [pt, pv] = this._data[this._data.length-1];
             if (pv.eq(v)) return;
-            console.assert(t > pt);
+            console.assert(t >= pt);
+            if (t == pt) { // overwrite
+                this._data[this._data.length-1][1] = v;
+                return;
+            }
         }
         this._data.push([t, v]);
     }
 
-    getRange(i : number, n : number) {
+    getRange(i : number, n : number): [number, Vector3vl][] {
         if (this._data.length == 0) return [];
         const binsearch = (k : number) => {
             let first = 0, last = this._data.length;
@@ -37,13 +45,14 @@ export class Waveform {
                 else if (k < mtick) last = middle;
                 else first = middle + 1;
             }
+            if (first == this._data.length) return first - 1;
             return first;
         };
         let first = binsearch(i);
         let last = binsearch(i+n);
         if (first > 0 && this._data[first][0] > i) first--;
         if (last < this._data.length-1 && this._data[last][0] < i+n) last++;
-        const s = this._data.slice(first, last + 1);
+        const s = this._data.slice(first, last + 1).map((p) : [number, Vector3vl] => [p[0], p[1]]);
         if (s[s.length-1][0] < i+n && this._present > s[s.length-1][0])
             s.push([this._present, s[s.length-1][1]]);
         return s;
@@ -55,6 +64,7 @@ type base = 'hex' | 'oct' | 'bin';
 export interface WaveCanvasSettings {
     start : number,
     span : number,
+    present? : number,
     bitColors : [string, string, string, string],
     heightFill : number,
     gapScale : number,
@@ -81,7 +91,7 @@ Object.freeze(defaultSettings);
 export function extendSettings(settings : WaveCanvasSettings, newSettings) : WaveCanvasSettings {
     var props = {};
     for (const [k, v] of Object.entries(newSettings)) {
-        props[k] = {value: v};
+        props[k] = {value: v, writable: true};
     }
     const ret = Object.create(settings, props);
     return ret;
@@ -95,11 +105,12 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
             case 'oct': return v.toOct();
         }
     };
+    c.clearRect(0, 0, c.canvas.width, c.canvas.height);
+    if ('present' in s) w.updatePresent(s.present);
     const data = w.getRange(s.start, s.span);
     const zdata = data.map((e, i) => [e, data[i+1]]);
     zdata.pop();
-    c.clearRect(0, 0, c.canvas.width, c.canvas.height);
-    const t2x = (t) => (t - s.start) / s.span * c.canvas.width;
+    const t2x = (t) => (Math.max(Math.min(t, s.start + s.span), s.start) - s.start) / s.span * c.canvas.width;
     const xy = 0.5 * c.canvas.height;
     const hy = (0.5 - s.heightFill / 2) * c.canvas.height;
     const ly = (0.5 + s.heightFill / 2) * c.canvas.height;

@@ -2,7 +2,7 @@
   "name": "wavecanvas",
   "version": "0.0.1",
   "description": "Digital waveform to HTML canvas",
-  "main": "index.js",
+  "main": "dist/wavecanvas.js",
   "scripts": {
     "prepare": "npm run prod",
     "dev": "webpack --mode development",
