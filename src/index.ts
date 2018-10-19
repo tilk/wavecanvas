@@ -72,6 +72,7 @@ export interface WaveCanvasSettings {
     gridWidth : number,
     gridColor : string,
     gridStep : number,
+    gridMinDist : number,
     font : string
 }
 
@@ -85,6 +86,7 @@ export const defaultSettings : WaveCanvasSettings = {
     gridWidth: 0.5,
     gridColor: 'gray',
     gridStep: 1,
+    gridMinDist: 10,
     font: '10px sans-serif'
 };
 
@@ -97,6 +99,17 @@ export function extendSettings(settings : WaveCanvasSettings, newSettings) : Wav
     }
     const ret = Object.create(settings, props);
     return ret;
+}
+
+function calcGridStep(s : WaveCanvasSettings) {
+    let gridStep = s.gridStep;
+    while (gridStep * s.pixelsPerTick < s.gridMinDist) {
+        if (10 * gridStep * s.pixelsPerTick < s.gridMinDist) gridStep *= 10;
+        else if (2 * gridStep * s.pixelsPerTick >= s.gridMinDist) gridStep *= 2;
+        else if (5 * gridStep * s.pixelsPerTick >= s.gridMinDist) gridStep *= 5;
+        else gridStep *= 10;
+    }
+    return gridStep;
 }
 
 export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings) {
@@ -125,7 +138,8 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     grad.addColorStop(0.5, s.bitColors[1]);
     grad.addColorStop(1, s.bitColors[2]);
     c.lineWidth = s.gridWidth;
-    for (let t = s.start - (s.start % s.gridStep); t < s.start + span; t += s.gridStep) {
+    const gridStep = calcGridStep(s);
+    for (let t = s.start - (s.start % gridStep); t < s.start + span; t += gridStep) {
         const x = t2x(t);
         c.beginPath();
         c.strokeStyle = s.gridColor;
