@@ -63,7 +63,7 @@ type base = 'hex' | 'oct' | 'bin';
 
 export interface WaveCanvasSettings {
     start : number,
-    span : number,
+    pixelsPerTick : number,
     present? : number,
     bitColors : [string, string, string, string],
     heightFill : number,
@@ -77,7 +77,7 @@ export interface WaveCanvasSettings {
 
 export const defaultSettings : WaveCanvasSettings = {
     start: 0,
-    span: 0,
+    pixelsPerTick: 10,
     bitColors: ['#fc7c68', '#999', '#03c03c', '#779ecb'],
     gapScale: 0.2,
     heightFill: 0.8,
@@ -108,11 +108,12 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
         }
     };
     c.clearRect(0, 0, c.canvas.width, c.canvas.height);
+    const span = c.canvas.width / s.pixelsPerTick;
     if ('present' in s) w.updatePresent(s.present);
-    const data = w.getRange(s.start, s.span);
+    const data = w.getRange(s.start, Math.ceil(span));
     const zdata = data.map((e, i) => [e, data[i+1]]);
     zdata.pop();
-    const t2x = (t) => (Math.max(Math.min(t, s.start + s.span), s.start) - s.start) / s.span * c.canvas.width;
+    const t2x = (t) => (Math.max(Math.min(t, s.start + span), s.start) - s.start) * s.pixelsPerTick;
     const xy = 0.5 * c.canvas.height;
     const hy = (0.5 - s.heightFill / 2) * c.canvas.height;
     const ly = (0.5 + s.heightFill / 2) * c.canvas.height;
@@ -124,7 +125,7 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     grad.addColorStop(0.5, s.bitColors[1]);
     grad.addColorStop(1, s.bitColors[2]);
     c.lineWidth = s.gridWidth;
-    for (let t = s.start - (s.start % s.gridStep); t < s.start + s.span; t += s.gridStep) {
+    for (let t = s.start - (s.start % s.gridStep); t < s.start + span; t += s.gridStep) {
         const x = t2x(t);
         c.beginPath();
         c.strokeStyle = s.gridColor;
@@ -139,7 +140,7 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
             const ab = av.get(0), bb = bv.get(0);
             const ay = b2y(ab), by = b2y(bb);
             const ac = b2c(ab), bc = b2c(bb);
-            const gap = Math.min(Math.abs(ay-by) * s.gapScale, c.canvas.width / s.span / 2);
+            const gap = Math.min(Math.abs(ay-by) * s.gapScale, s.pixelsPerTick / 2);
             c.beginPath();
             c.strokeStyle = grad;
             c.moveTo(bx - gap, ay);
@@ -151,7 +152,7 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
             c.lineTo(bx - gap, ay);
             c.stroke();
         } else {
-            const gap = Math.min(Math.abs(hy-ly) * s.gapScale, c.canvas.width / s.span / 2);
+            const gap = Math.min(Math.abs(hy-ly) * s.gapScale, s.pixelsPerTick / 2);
             const ac = w2c(av), bc = w2c(bv);
             const ad = av.isDefined, bd = bv.isDefined;
             if (ad) {
