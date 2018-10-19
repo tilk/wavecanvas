@@ -71,6 +71,7 @@ export interface WaveCanvasSettings {
     base : base,
     gridWidth : number,
     gridColor : string,
+    gridStep : number,
     font : string
 }
 
@@ -83,6 +84,7 @@ export const defaultSettings : WaveCanvasSettings = {
     base: 'hex',
     gridWidth: 0.5,
     gridColor: 'gray',
+    gridStep: 1,
     font: '10px sans-serif'
 };
 
@@ -122,8 +124,8 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
     grad.addColorStop(0.5, s.bitColors[1]);
     grad.addColorStop(1, s.bitColors[2]);
     c.lineWidth = s.gridWidth;
-    for (const t of Array(s.span).keys()) {
-        const x = t2x(t + s.start);
+    for (let t = s.start - (s.start % s.gridStep); t < s.start + s.span; t += s.gridStep) {
+        const x = t2x(t);
         c.beginPath();
         c.strokeStyle = s.gridColor;
         c.moveTo(x, 0);
