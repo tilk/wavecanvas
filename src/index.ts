@@ -101,7 +101,7 @@ export function extendSettings(settings : WaveCanvasSettings, newSettings) : Wav
     return ret;
 }
 
-function calcGridStep(s : WaveCanvasSettings) {
+export function calcGridStep(s : WaveCanvasSettings) {
     let gridStep = s.gridStep;
     while (gridStep * s.pixelsPerTick < s.gridMinDist) {
         if (10 * gridStep * s.pixelsPerTick < s.gridMinDist) gridStep *= 10;
