@@ -3,6 +3,7 @@
     "module": "commonjs",
     "target": "es6",
     "declaration": true,
+    "sourceMap": true,
     "outDir": "./dist",
 	"rootDir": "./src",
     "lib": [ "dom", "es2017", "es2017.object" ]
