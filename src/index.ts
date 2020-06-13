@@ -1,5 +1,5 @@
 
-import { Vector3vl } from '3vl';
+import { Vector3vl, Display3vl } from '3vl';
 
 export { Vector3vl };
 
@@ -112,14 +112,7 @@ export function calcGridStep(s : WaveCanvasSettings) {
     return gridStep;
 }
 
-export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings) {
-    const v2b = (v, b) => {
-        switch(b) {
-            case 'bin': return v.toBin();
-            case 'hex': return v.toHex();
-            case 'oct': return v.toOct();
-        }
-    };
+export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : WaveCanvasSettings, disp : Display3vl = new Display3vl()) {
     c.clearRect(0, 0, c.canvas.width, c.canvas.height);
     const span = c.canvas.width / s.pixelsPerTick;
     if ('present' in s) w.updatePresent(s.present);
@@ -173,10 +166,10 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
                 c.textAlign = 'center';
                 c.textBaseline = 'middle';
                 c.font = s.font;
-                const txt = v2b(av, s.base);
+                const txt = disp.show(s.base, av);
                 const meas = c.measureText(txt);
                 if (meas.width < (bx-ax-gap)*2)
-                    c.fillText(v2b(av, s.base), (ax+bx-gap)/2, c.canvas.height/2, bx-ax-gap);
+                    c.fillText(txt, (ax+bx-gap)/2, c.canvas.height/2, bx-ax-gap);
             }
             if (!ad && !bd) {
                 c.beginPath();
