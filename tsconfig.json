@@ -5,7 +5,7 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
-	"rootDir": "./src",
+    "rootDir": "./src",
     "lib": [ "dom", "es2017", "es2017.object" ]
   },
   "include": [
