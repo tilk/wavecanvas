@@ -1,6 +1,6 @@
 {
   "name": "wavecanvas",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Digital waveform to HTML canvas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
