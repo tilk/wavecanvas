@@ -1,6 +1,6 @@
 {
   "name": "wavecanvas",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Digital waveform to HTML canvas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,6 +35,6 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "3vl": "^0.3.1"
+    "3vl": "^0.3.2"
   }
 }
