@@ -1,6 +1,6 @@
 {
   "name": "wavecanvas",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Digital waveform to HTML canvas",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -32,6 +32,6 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "3vl": "^0.3.3"
+    "3vl": "^0.3.4"
   }
 }
