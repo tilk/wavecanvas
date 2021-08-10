@@ -1,6 +1,6 @@
 {
   "name": "wavecanvas",
-  "version": "0.2.5",
+  "version": "1.0.0",
   "description": "Digital waveform to HTML canvas",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -29,9 +29,9 @@
   "homepage": "https://github.com/tilk/wavecanvas#readme",
   "devDependencies": {
     "ts-loader": "^6.2.2",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
-    "3vl": "^0.3.5"
+    "3vl": "^1.0.0"
   }
 }
