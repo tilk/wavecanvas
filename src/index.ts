@@ -73,7 +73,8 @@ export interface WaveCanvasSettings {
     gridColor : string,
     gridStep : number,
     gridMinDist : number,
-    font : string
+    font : string,
+    textColor : string
 }
 
 export const defaultSettings : WaveCanvasSettings = {
@@ -87,7 +88,8 @@ export const defaultSettings : WaveCanvasSettings = {
     gridColor: 'gray',
     gridStep: 1,
     gridMinDist: 10,
-    font: '10px sans-serif'
+    font: '10px sans-serif',
+    textColor: 'black'
 };
 
 Object.freeze(defaultSettings);
@@ -166,6 +168,7 @@ export function drawWaveform(w : Waveform, c : CanvasRenderingContext2D, s : Wav
                 c.textAlign = 'center';
                 c.textBaseline = 'middle';
                 c.font = s.font;
+                c.fillStyle = s.textColor;
                 const txt = disp.show(s.base, av);
                 const meas = c.measureText(txt);
                 if (meas.width < (bx-ax-gap)*2)
