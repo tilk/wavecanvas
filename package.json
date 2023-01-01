@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/tilk/wavecanvas#readme",
   "devDependencies": {
-    "ts-loader": "^6.2.2",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.9.10"
   },
   "dependencies": {
